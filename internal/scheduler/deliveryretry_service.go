@@ -1,6 +1,8 @@
 package scheduler
 
-import "errors"
+import (
+	"errors"
+)
 
 var ErrDeliveryRetryTransient = errors.New("deliveryretry temporarily unavailable")
 var ErrDeliveryRetryPermanent = errors.New("deliveryretry permanently rejected")
@@ -15,9 +17,9 @@ func (r *DeliveryRetryRetry) Record(err error) {
 		r.Permanent = false
 		return
 	}
-	if err.Error() == ErrDeliveryRetryTransient.Error() {
+	if errors.Is(err, ErrDeliveryRetryTransient) {
 		r.Attempts++
-	} else {
-		r.Permanent = true
+		return
 	}
+	r.Permanent = true
 }
